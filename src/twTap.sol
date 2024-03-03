@@ -10,7 +10,7 @@ import {IERC20} from "@oz/token/ERC20/IERC20.sol";
 import {Ownable} from "@oz/access/Ownable.sol";
 
 import {TapToken} from "./TapToken.sol";
-import {TWAML} from "./twAML.sol";
+import {TWAML} from "./TWAML.sol";
 
 /*
 
