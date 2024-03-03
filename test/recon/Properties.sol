@@ -47,4 +47,13 @@ abstract contract Properties is Setup, Asserts {
         // NOTE gte cause we can get a ton of tokens that are expired
         return tap.balanceOf(address(twTap)) >= acc;
     }
+
+    function crytic_neverNegativeOnCurrent() public view returns (bool) {
+        // Don't check if we have yet to synch to future
+        if(twTap.currentWeek() > twTap.lastProcessedWeek()) {
+            return true;
+        }
+
+        return twTap.getNetActiveVotes(twTap.currentWeek()) >= 0;
+    }
 }

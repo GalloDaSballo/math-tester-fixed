@@ -128,6 +128,10 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
     uint256 public lastProcessedWeek;
     mapping(uint256 => WeekTotals) public weekTotals;
 
+    function getNetActiveVotes(uint256 epoch) external view returns (int256) {
+        return weekTotals[epoch].netActiveVotes;
+    }
+
     event LogMaxRewardsLength(uint256 indexed _oldLength, uint256 indexed _newLength, uint256 indexed _currentLength);
 
     error NotAuthorized();
@@ -520,6 +524,10 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
         return ((timestamp - creation) / EPOCH_DURATION); /// EPOCH / Week
     }
 
+    function isApprovedOrOwner(address _to, uint256 _tokenId) public view returns (bool) {
+        return _isApprovedOrOwner(_to, _tokenId);
+    }
+
     /**
      * @dev Use `_isApprovedOrOwner()` internally. /// @audit Could this allow stealing in some way?
      */
@@ -546,6 +554,23 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
                 }
             }
         }
+    }
+
+    function canReleaseTap(uint256 _tokenId) external view returns (bool) {
+        Participation memory position = participants[_tokenId];
+
+        if(position.expiry == 0) {
+            return false; // Doesn't exist
+        }
+
+        if (position.expiry > block.timestamp) {
+            return false;
+        }
+        if (position.tapReleased) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
