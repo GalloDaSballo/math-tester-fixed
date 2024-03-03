@@ -20,6 +20,7 @@ abstract contract TargetFunctions is BaseTargetFunctions, Properties, BeforeAfte
 
     function TwTAP_participate(address _participant, uint256 _amount, uint256 _duration) public {
         _duration = between(_duration, twTap.EPOCH_DURATION(), twTap.MAX_LOCK_DURATION());
+        _amount = between(_amount, 0, tap.balanceOf(address(this)));
         uint256 newTokenId = twTap.participate(_participant, _amount, _duration);
 
         if (newTokenId > highestTokenId) {
