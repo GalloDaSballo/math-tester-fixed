@@ -80,6 +80,10 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
         return twAML.totalDeposited;
     }
 
+    function setCumulative(uint256 amt) public returns (uint256) {
+        twAML.cumulative = amt;
+    }
+
     mapping(uint256 => Participation) public participants; // tokenId => part.
     function getParticipationAmount(uint256 i) public view returns (uint256) {
         if(!participants[i].tapReleased) {
@@ -278,6 +282,8 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
     //    WRITE
     // ===========
 
+    event Jackpot();
+
     /// @notice Participate in twAML voting and mint an twTap position
     /// @dev Requires a Pearlmit approval for the TAP amount
     ///
@@ -324,6 +330,8 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
                     pool.cumulative -= pool.averageMagnitude;
                 } else {
                     pool.cumulative = 0; /// @audit Needs to be EPOCH_DURATION
+                    emit Jackpot();
+                    assert(false); // If this happens we found crit
                 }
             }
 

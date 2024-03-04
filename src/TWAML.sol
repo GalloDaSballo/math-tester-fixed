@@ -119,17 +119,17 @@ abstract contract TWAML is FullMath {
     /// @notice Compute the minimum weight to participate in the twAML voting mechanism
     /// @param _totalWeight The total weight of the twAML system
     /// @param _minWeightFactor The minimum weight factor in BPS
-    function computeMinWeight(uint256 _totalWeight, uint256 _minWeightFactor) internal pure returns (uint256) {
+    function computeMinWeight(uint256 _totalWeight, uint256 _minWeightFactor) public pure returns (uint256) {
         uint256 mul = (_totalWeight * _minWeightFactor);
         return mul >= 1e4 ? mul / 1e4 : _totalWeight;
     } // 10_000 e18 * 1000 / 1e4 | 1k TAP to vote
 
-    function computeMagnitude(uint256 _timeWeight, uint256 _cumulative) internal pure returns (uint256) {
+    function computeMagnitude(uint256 _timeWeight, uint256 _cumulative) public pure returns (uint256) {
         return sqrt(_timeWeight * _timeWeight + _cumulative * _cumulative) - _cumulative;
     }
 
     function computeTarget(uint256 _dMin, uint256 _dMax, uint256 _magnitude, uint256 _cumulative)
-        internal
+        public
         pure
         returns (uint256)
     {
@@ -142,7 +142,7 @@ abstract contract TWAML is FullMath {
     }
 
     // babylonian method (https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method)
-    function sqrt(uint256 y) internal pure returns (uint256 z) {
+    function sqrt(uint256 y) public pure returns (uint256 z) {
         if (y > 3) {
             z = y;
             uint256 x = y / 2 + 1;

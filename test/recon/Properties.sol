@@ -50,7 +50,7 @@ abstract contract Properties is Setup, Asserts {
 
     function crytic_neverNegativeOnCurrent() public view returns (bool) {
         // Don't check if we have yet to synch to future
-        if(twTap.currentWeek() > twTap.lastProcessedWeek()) {
+        if (twTap.currentWeek() > twTap.lastProcessedWeek()) {
             return true;
         }
 

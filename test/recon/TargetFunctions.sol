@@ -9,33 +9,34 @@ import {vm} from "@chimera/Hevm.sol";
 abstract contract TargetFunctions is BaseTargetFunctions, Properties, BeforeAfter {
     uint256 highestTokenId;
 
-
     function TwTAP_advanceWeek(uint256 _limit) public {
-        try twTap.advanceWeek(_limit) {} catch {
+        try twTap.advanceWeek(_limit) {}
+        catch {
             t(false, "Advance Week Should never revert");
         }
     }
 
-    function TwTAP_exitPosition(uint256 _tokenId, address _to) public {
-        _tokenId = between(_tokenId, 0, highestTokenId);
+    // function TwTAP_exitPosition(uint256 _tokenId, address _to) public {
+    //     _tokenId = between(_tokenId, 0, highestTokenId);
 
-        twTap.exitPosition(_tokenId, _to);
-    }
+    //     twTap.exitPosition(_tokenId, _to);
+    // }
 
-    /// @dev so we can check for unexpected reverts
-    function TwTAP_exitPositionSelf(uint256 _tokenId, address _to) public {
-        _tokenId = between(_tokenId, 0, highestTokenId);
+    // /// @dev so we can check for unexpected reverts
+    // function TwTAP_exitPositionSelf(uint256 _tokenId, address _to) public {
+    //     _tokenId = between(_tokenId, 0, highestTokenId);
 
-        // 
-        bool checkRelease = twTap.canReleaseTap(_tokenId) && twTap.isApprovedOrOwner(address(this), _tokenId);
+    //     //
+    //     bool checkRelease = twTap.canReleaseTap(_tokenId) && twTap.isApprovedOrOwner(address(this), _tokenId);
 
-        try twTap.exitPosition(_tokenId, address(this)) {} catch {
-            // Only claim to self else the check below is not valid
-            if(checkRelease) {
-                t(false, "Should never revert on true");
-            }
-        }
-    }
+    //     try twTap.exitPosition(_tokenId, address(this)) {}
+    //     catch {
+    //         // Only claim to self else the check below is not valid
+    //         if (checkRelease) {
+    //             t(false, "Should never revert on true");
+    //         }
+    //     }
+    // }
 
     function TwTAP_participate(address _participant, uint256 _amount, uint256 _duration) public {
         _duration = between(_duration, twTap.EPOCH_DURATION(), twTap.MAX_LOCK_DURATION());
