@@ -11,6 +11,10 @@ abstract contract Properties is Setup, Asserts {
         return twTap.getCumulative() > 1000; // And the amt needs to be super small
     }
 
+    function crytic_canary() public returns (bool) {
+        return twTap.getCumulative() > 1000 && twTap.getAverage() < 1000;
+    }
+
     // - Prove that `averageMagnitude` is not average at all, it grows over time - Monotonic test -> QA / M maybe even known
     /// NEED B4 After
 
