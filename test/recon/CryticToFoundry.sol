@@ -129,4 +129,7 @@ contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
 
     // TODO: Mock twTAP with setter for averageMagnitude, cumulative, totalParticipans
     // Min magnitude is
+
+    // Set first 100 deposits to a time
+    // Show that it basically never changes
 }

@@ -121,16 +121,18 @@ contract TwTap {
 }
 
 contract CryticToFoundry is Test {
+    TwTap twtap;
+    function setUp() public {
+        twtap = new TwTap();
+    }
 
-  function _logTwTap(TwTap t) internal {
-    console2.log("averageMagnitude", t.averageMagnitude());
-    console2.log("cumulative", t.cumulative());
+  function _logTwTap() internal {
+    console2.log("averageMagnitude", twtap.averageMagnitude());
+    console2.log("cumulative", twtap.cumulative());
   }
 
 
     function test_twapWithHardocodedValues_smallDuration_hasNoImpact() public {
-        TwTap twtap = new TwTap();
-
         // Set twTAP to have some participation
         // To force lockers for 4 years for max
         // 100 people
@@ -138,16 +140,14 @@ contract CryticToFoundry is Test {
         // 4 years
         twtap.setaAverageMagnitude(365.25 days * 4);
         twtap.setCumulative(365.25 days * 4 * 100); // assume that each new add pushes by up to 100 times, massive
-        _logTwTap(twtap);
+        _logTwTap();
 
         // Can we write one operation that causes this to go to zero?
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
     }
 
     function test_twapWithHardocodedValues_closeButNotSigar_hasMassiveImpact() public {
-        TwTap twtap = new TwTap();
-
         // Set twTAP to have some participation
         // To force lockers for 4 years for max
         // 100 people
@@ -155,49 +155,140 @@ contract CryticToFoundry is Test {
         // 4 years
         twtap.setaAverageMagnitude(365.25 days * 4);
         twtap.setCumulative(365.25 days * 4 + 1); // Set to smaller for convenience
-        _logTwTap(twtap);
+        _logTwTap();
 
         // Can we write one operation that causes this to go to zero?
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(365.25 days * 4, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
 
-        // Decreases slowly af
+        // Decreases very slowly
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
         twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
-        _logTwTap(twtap);
+        _logTwTap();
     }
 
 
 
-    // Shitton of small short locks = we fucked the magnitude math for a long time
+    // A lot of small short locks = the magnitude math no longer changes
     // A lot of small locks with small duration = nobody can lock for a high time
+    function test_first100_has_impact() public {
+        uint256 count;
+        while(count < 100) {
+            twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
+            count++;
+        }
+
+        // _logTwTap();
+
+        count = 0;       
+        uint256 lastMaxMagnitude; 
+        while(count < 100) {
+            uint256 maxMagnitude = 365.25 days * 4;
+            bool done;
+            while(!done) {
+                try twtap.participate(maxMagnitude, twtap.getMinWeight()) {
+                    done = true;
+                } catch {
+                    maxMagnitude /= 2; // Cut by half
+                }
+            }
+            // console2.log("maxMagnitude", maxMagnitude);
+            // _logTwTap();
+            count++;
+            lastMaxMagnitude = maxMagnitude;
+        }
+
+        _logTwTap();
+        console2.log("lastMaxMagnitude", lastMaxMagnitude);
+    }
+
+    function test_first100_has_impact_reverse() public {
+        uint256 count = 0;
+        uint256 lastMaxMagnitude; 
+        while(count < 100) {
+            uint256 maxMagnitude = 365.25 days * 4;
+            bool done;
+            while(!done) {
+                try twtap.participate(maxMagnitude, twtap.getMinWeight()) {
+                    done = true;
+                } catch {
+                    maxMagnitude /= 2; // Cut by half
+                }
+            }
+            // console2.log("maxMagnitude", maxMagnitude);
+            // _logTwTap();
+            count++;
+            lastMaxMagnitude = maxMagnitude;
+        }
+
+        // Short
+        count = 0;
+        while(count < 100) {
+            twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
+            count++;
+        }
+
+        _logTwTap();
+        console2.log("lastMaxMagnitude", lastMaxMagnitude);
+    }
+
+    /// Further proof that the first 100 determine the rest
+    function test_first100_has_impact_reverse_10k() public {
+        uint256 count = 0;
+        uint256 lastMaxMagnitude; 
+        while(count < 100) {
+            uint256 maxMagnitude = 365.25 days * 4;
+            bool done;
+            while(!done) {
+                try twtap.participate(maxMagnitude, twtap.getMinWeight()) {
+                    done = true;
+                } catch {
+                    maxMagnitude /= 2; // Cut by half
+                }
+            }
+            // console2.log("maxMagnitude", maxMagnitude);
+            // _logTwTap();
+            count++;
+            lastMaxMagnitude = maxMagnitude;
+        }
+
+        // Short
+        count = 0;
+        while(count < 1000) {
+            twtap.participate(twtap.EPOCH_DURATION() + 1, twtap.getMinWeight());
+            count++;
+        }
+
+        _logTwTap();
+        console2.log("lastMaxMagnitude", lastMaxMagnitude);
+    }
 }

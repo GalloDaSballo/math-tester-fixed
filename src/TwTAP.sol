@@ -329,9 +329,7 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
                 if (pool.cumulative > pool.averageMagnitude) {
                     pool.cumulative -= pool.averageMagnitude;
                 } else {
-                    pool.cumulative = 0; /// @audit Needs to be EPOCH_DURATION
-                    emit Jackpot();
-                    assert(false); // If this happens we found crit
+                    pool.cumulative = EPOCH_DURATION;
                 }
             }
 
@@ -599,7 +597,7 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
         releasedAmount = position.tapAmount;
 
         // Remove participation
-        if (position.hasVotingPower) {
+                if (position.hasVotingPower) {
             TWAMLPool memory pool = twAML;
             unchecked {
                 --pool.totalParticipants;
@@ -610,10 +608,10 @@ contract TwTAP is TWAML, ERC721, ReentrancyGuard, Ownable {
             // entered. When going the other way around, this value matches the
             // one in the pool, but here it does not.
             if (position.divergenceForce) {
-                if (pool.cumulative > position.averageMagnitude) { 
+                if (pool.cumulative > position.averageMagnitude) {
                     pool.cumulative -= position.averageMagnitude;
                 } else {
-                    pool.cumulative = 0;
+                    pool.cumulative = EPOCH_DURATION;
                 }
             } else {
                 pool.cumulative += position.averageMagnitude;
