@@ -8,7 +8,7 @@ abstract contract Properties is Setup, Asserts {
     // - See if we can get the cumulative to get to 0 - Check spot value -> High Severity DOS
 
     function crytic_cumulativeIsNeverZero() public returns (bool) {
-        return twTap.getCumulative() > 0;
+        return twTap.getCumulative() > 1000; // And the amt needs to be super small
     }
 
     // - Prove that `averageMagnitude` is not average at all, it grows over time - Monotonic test -> QA / M maybe even known
