@@ -10,6 +10,8 @@ abstract contract Setup is BaseSetup {
     TapToken tap;
     TwTAP twTap;
 
+    uint256 moves;
+
     function setup() internal virtual override {
         tap = new TapToken();
         twTap = new TwTAP(payable(address(tap))); // TODO: Add parameters here

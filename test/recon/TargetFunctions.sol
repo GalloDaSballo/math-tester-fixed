@@ -20,6 +20,7 @@ abstract contract TargetFunctions is BaseTargetFunctions, Properties, BeforeAfte
         _tokenId = between(_tokenId, 0, highestTokenId);
 
         twTap.exitPosition(_tokenId, _to);
+        moves++;
     }
 
     /// @dev so we can check for unexpected reverts
@@ -36,6 +37,7 @@ abstract contract TargetFunctions is BaseTargetFunctions, Properties, BeforeAfte
                 t(false, "Should never revert on true");
             }
         }
+        moves++;
     }
 
     function TwTAP_participate(address _participant, uint256 _amount, uint256 _duration) public {
@@ -46,6 +48,18 @@ abstract contract TargetFunctions is BaseTargetFunctions, Properties, BeforeAfte
         if (newTokenId > highestTokenId) {
             highestTokenId = newTokenId;
         }
+        moves++;
+    }
+
+    function twTAP_ParticipateAndExit(address _participant, uint256 _amount, uint256 _duration, uint256 _tokenId, address _to) public {
+        TwTAP_participate(_participant, _amount, _duration);
+        TwTAP_exitPosition(_tokenId, _to);
+        moves++;
+
+        if(twTap.getCumulative() > 1000 && moves <= 2) {
+            t(false, "Jackpot");
+        }
+
     }
 
     // function TapToken_mintToSelf(uint256 amt) public {
