@@ -129,4 +129,21 @@ contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
 
     // TODO: Mock twTAP with setter for averageMagnitude, cumulative, totalParticipans
     // Min magnitude is
+
+    // forge test --match-test test_counterSymbolic -vv
+    function test_counterSymbolic() public {
+        bytes4[] memory selectors = new bytes4[](3);
+        selectors[0] = this.TwTAP_participate.selector;
+
+        Data[] memory theData =  new Data[](3);
+        theData[0] = Data({
+            _tokenId: 0,
+            _to: address(0),
+            
+            _participant: address(123),
+            _amount: 123,
+            _duration: 7 days
+        });
+        check_counter_symbolic(selectors, theData);
+    }
 }

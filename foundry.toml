@@ -5,7 +5,8 @@ libs = ['lib']
 remappings = [
     'forge-std/=lib/forge-std/src/',
     '@oz/=lib/openzeppelin-contracts/contracts/',
-    '@chimera/=lib/chimera/src/'
+    '@chimera/=lib/chimera/src/',
+    "halmos-cheatcodes=lib/halmos-cheatcodes/src/"
 ]
 solc_version = "0.8.22"
 
